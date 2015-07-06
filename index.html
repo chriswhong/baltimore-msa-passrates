@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+  <link rel="stylesheet" href="style.css" type="text/css">
+  <title>Baltimore Region Public Schools MSA Scores</title>
+
+
+    <script type="text/javascript" src=
+    "http://maps.google.com/maps/api/js?sensor=false">
+</script>
+
+    <script type="text/javascript">
+
+
+  
+
+    function initialize() {
+	
+
+
+    // var tableId1 = 4817249;
+	 var tableId1 = 4874965;
+	var locationColumn = 'geometry';
+
+	var mapStyles = [
+         {
+            featureType: "road",
+            elementType: "geometry",
+            stylers: [
+              { hue: "#8800ff" },
+              { lightness: 100 }
+            ]
+          },{
+            featureType: "road",
+            stylers: [
+              { visibility: "on" },
+              { hue: "#91ff00" },
+              { saturation: -62 },
+              { gamma: 1.98 },
+              { lightness: 45 }
+            ]
+          },{
+            featureType: "water",
+            stylers: [
+              { hue: "#005eff" },
+              { gamma: 0.72 },
+              { lightness: 42 }
+            ]
+          },{
+            featureType: "transit.line",
+            stylers: [
+              { visibility: "off" }
+            ]
+          },{
+            featureType: "administrative.locality",
+            stylers: [
+              { visibility: "on" }
+            ]
+          },{
+            featureType: "administrative.neighborhood",
+            elementType: "geometry",
+            stylers: [
+              { visibility: "simplified" }
+            ]
+          },{
+            featureType: "landscape",
+            stylers: [
+              { visibility: "on" },
+              { gamma: 0.41 },
+              { lightness: 46 }
+            ]
+          },{
+            featureType: "administrative.neighborhood",
+            elementType: "labels.text",
+            stylers: [
+              { visibility: "on" },
+              { saturation: 33 },
+              { lightness: 20 }
+            ]
+          }
+        ];
+    var map = new google.maps.Map(document.getElementById('map_canvas'), {
+    center: new google.maps.LatLng(39.290734, -76.442871),
+    zoom: 10,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+	styles: mapStyles,
+    });
+
+	var georssLayer = new google.maps.KmlLayer('http://jfxart.com/baltimoreschools/countyboundaries.kml',{suppressInfoWindows: true,preserveViewport:true});
+georssLayer.setMap(map);
+	
+	
+    var layer1 = new google.maps.FusionTablesLayer({
+          query: {
+            select: locationColumn,
+            from: tableId1
+          },
+          map: map
+        });
+
+
+
+	
+	
+	google.maps.event.addListener(layer1, 'click', function(e) {
+
+          // Change the content of the InfoWindow
+          e.infoWindowHtml = "<div class='schoolname'>" + e.row['schoolname'].value + "</div><div class='address'>" +
+		  e.row['Address'].value + "<br>" + e.row['City_1'].value + ", " +
+			e.row['State_1'].value + " " +e.row['Zip_1'].value + "</div><div class='score'>" + 
+			Math.round(e.row['percent'].value*100)	+ "%</div> <div class = 'passrate'>MSA pass rate</div>"	  ;
+
+      
+        });
+	
+		google.maps.event.addDomListener(document.getElementById('schoolType'),
+            'change', function() {
+              changeMap(layer1, tableId1, locationColumn);
+        });
+	
+    }
+
+
+    function toggleLayer(this_layer)
+    {
+    if( this_layer.getMap() ){
+        this_layer.setMap(null);
+    }else{
+        this_layer.setMap(map);
+    }
+    }
+
+    function clearLayer() {
+    if (currentLayer != null) {
+      currentLayer.setMap(null);
+    }
+    }
+	
+
+      
+
+	
+	
+	function changeMap(layer1, tableId1, locationColumn) {
+	var searchString = document.getElementById('schoolType').value;
+	if (searchString) {
+          layer1.setOptions({
+            query: {
+              select: locationColumn,
+              from: tableId1,
+              where: "School_Typ CONTAINS '" + searchString + "'"
+            }
+          });
+
+    } else {
+          layer1.setOptions({
+            query: {
+              select: locationColumn,
+              from: tableId1
+            }
+          });
+        }
+      }
+
+	
+	
+	
+	
+
+	
+	
+    </script>
+   
+    <title>MSA Pass Rates Map for Baltimore Area Schools</title>
+	
+	<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-21712852-5']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  </head>
+  <body onload="initialize();">
+
+  
+  <div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=252079801517521";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+  
+  
+    <div id="map_canvas"></div>
+	<div class="menu" id="menu">
+	<div class="topimg"><img src = "topimg.png"></div>
+	Show:
+	<select id = "schoolType" name="pretty"  class="pretty dk">
+  <option value="">All Schools</option>
+
+  <option value="M">Middle Schools</option>
+  <option value="E">Elementary Schools</option>
+</select>
+	<div class="key">
+	Key
+	<table class="keytable">
+	<tr><td><img src = "images/marker-green.png" class = "markerimg"> 80% and Up</td></tr>
+	<tr><td><img src = "images/marker-yellow.png" class = "markerimg"> 50% to 79%</td></tr>
+	<tr><td><img src = "images/marker-red.png" class = "markerimg"> 49% and Below</td></tr>
+	</table>
+	</div>
+	<p>
+	This map shows the 2012 Maryland School Assessment pass rates for public elementary and middle schools in Baltimore City, Baltimore County, Carroll County, Harford County, Howard County, and Anne Arundel County.
+	</p>
+	<p>Click a marker to see the details for that school.</p>
+	
+	<p> <span style="font-style:italic">The Maryland School Assessment (MSA) is a test of reading, math, and science achievement. This test provides educators, parents, and the public valuable information about student, school, school system, and state performance.</span> -mdk12.org </p>
+    
+	<p>
+	Data from <a href = "http://www.mdreportcard.org/">mdreportcard.com</a> via <a href = "http://www.baltimoresun.com/news/maryland/education/bal-students-pass-msa-20120711,0,73724.htmlstory">baltimoresun.com</a></p>
+	<p>Map Development by <a href = "http://www.charmcitynetworks.com">Charm City Networks</a><br>Design inspiration from <a href = "http://map.baltimoretech.net/">Baltimore Tech Map</a> 
+	</p>
+	
+	<div class="fb-like" data-href="http://www.charmcitynetworks.com/baltimoreschools" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</div>
+  </body>
+</html>
